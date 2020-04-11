@@ -34,7 +34,7 @@ pipeline {
         }
         stage ('Kubernetes Deployment') {
             steps {
-                sh 'kubectl set image deployment/todolist-backend todolist-backend=todolist-backend1.${BUILD_ID} --record'
+                sh 'kubectl set image deployment/todolist-backend todolist-backend=todolist-backend:1.${BUILD_ID} --record'
             }
         }
     }
