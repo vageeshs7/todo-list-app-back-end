@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFac
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.config.JmsListenerContainerFactory;
 import org.springframework.jms.connection.CachingConnectionFactory;
@@ -27,6 +28,7 @@ import java.util.Properties;
 @Configuration
 @PropertySource("classpath:messaging.properties")
 @Component
+@EnableJms
 public class MessagingConfig {
     @Value("${jms.destination.todo-save}")
     private String todoSaveQueueName;

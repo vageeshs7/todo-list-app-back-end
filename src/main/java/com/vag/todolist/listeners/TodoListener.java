@@ -14,7 +14,7 @@ import javax.jms.Message;
 @Component
 public class TodoListener {
     private Logger logger = LogManager.getLogger(MessagingConfig.class);
-    @JmsListener(destination = "todo-save-queue", containerFactory = "todoMessagingFactory")
+    @JmsListener(destination = "todo-save-queue", containerFactory = "todoMessagingFactory", concurrency = "1-5")
     public void receiveMessage(Message message) {
         try {
             logger.info("Received <" + message.getJMSMessageID() + ">" + message.getClass());
