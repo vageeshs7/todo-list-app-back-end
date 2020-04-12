@@ -109,6 +109,7 @@ public class MessagingConfig {
 
 
             factory.setConnectionFactory(cachingConnectionFactory());
+            factory.setSessionTransacted(false);
             configurer.configure(factory, cachingConnectionFactory());
         } catch (Exception e) {
             logger.error(e);
