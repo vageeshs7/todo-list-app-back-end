@@ -15,7 +15,7 @@ import javax.naming.NamingException;
 import java.io.IOException;
 
 @Component
-public class TodoListener {
+public class TodoListener implements MessageListener{
     private Logger logger = LogManager.getLogger(TodoListener.class);
     /*@JmsListener(destination = "todo-save-queue", containerFactory = "todoMessagingFactory", concurrency = "1-5")
     public void receiveMessage(Message message) {
@@ -32,36 +32,37 @@ public class TodoListener {
     @Autowired
     CachingConnectionFactory connectionFactory;
 
-    @Bean(name = "receiveMessage")
-    public String receiveMessage(){
+    @Bean(name = "receiveTodoSaveMessage")
+    public String receiveTodoSaveMessage(){
         logger.info("Initializing Todo Listener with conn fac=" + connectionFactory + ", config=" + messagingConfig);
         try {
             Connection connection = connectionFactory.createConnection();
-            Session session = connection.createSession();
+            Session session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
             Queue saveQueue = session.createQueue(messagingConfig.getTodoSaveQueueName());
             MessageConsumer consumer = session.createConsumer(saveQueue);
-
-            consumer.setMessageListener(new MessageListener() {
-                @Override
-                public void onMessage(Message message) {
-                    try {
-                        logger.info("Message received - " + message.getJMSMessageID());
-                        //ACK the received message manually because of the set Session.CLIENT_ACKNOWLEDGE above
-                        message.acknowledge();
-
-                    } catch (JMSException ex) {
-                        logger.error("Error processing incoming message.", ex);
-                    }
-                }
-            });
-
-            // Start receiving messages
+            consumer.setMessageListener(this);
             connection.start();
-            logger.info("Awaiting messages...");
+            logger.info("Listener initialized. Awaiting messages...");
         } catch (Exception e) {
             logger.error(e);
         }
 
-        return "receiveMessage";
+        return "receiveTodoSaveMessage";
+    }
+
+    @Override
+    public void onMessage(Message message) {
+        try {
+            logger.info("Message received - " + message.getJMSMessageID());
+            String payload;
+            if (message instanceof TextMessage) {
+                payload = ((TextMessage) message).getText();
+                logger.info(payload);
+            }
+            //ACK the received message manually because of the set Session.CLIENT_ACKNOWLEDGE above
+            message.acknowledge();
+        } catch (JMSException ex) {
+            logger.error("Error processing incoming message.", ex);
+        }
     }
 }
