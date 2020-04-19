@@ -52,12 +52,8 @@ public class TodoListener {
             // Start receiving messages
             connection.start();
             logger.info("Awaiting messages...");
-        } catch (JMSException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NamingException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            logger.error(e);
         }
     }
 }
