@@ -1,18 +1,14 @@
 package com.vag.todolist.listeners;
 
 import com.vag.todolist.config.MessagingConfig;
-import com.vag.todolist.dom.Todo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.stereotype.Component;
 
 import javax.jms.*;
-import javax.naming.NamingException;
-import java.io.IOException;
 
 @Component
 public class TodoListener implements MessageListener{
@@ -53,7 +49,7 @@ public class TodoListener implements MessageListener{
     @Override
     public void onMessage(Message message) {
         try {
-            logger.info("Message received - " + message.getJMSMessageID());
+            logger.info("Message received - " + message.getJMSMessageID() + ", type=" + message.getClass());
             String payload;
             if (message instanceof TextMessage) {
                 payload = ((TextMessage) message).getText();
