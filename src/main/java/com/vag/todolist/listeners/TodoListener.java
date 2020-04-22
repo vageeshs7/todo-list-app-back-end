@@ -1,6 +1,11 @@
 package com.vag.todolist.listeners;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.vag.todolist.config.MessagingConfig;
+import com.vag.todolist.dom.Todo;
+import com.vag.todolist.services.TodoService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +14,7 @@ import org.springframework.jms.connection.CachingConnectionFactory;
 import org.springframework.stereotype.Component;
 
 import javax.jms.*;
+import java.io.IOException;
 
 @Component
 public class TodoListener implements MessageListener{
@@ -27,6 +33,15 @@ public class TodoListener implements MessageListener{
 
     @Autowired
     CachingConnectionFactory connectionFactory;
+
+    ObjectMapper objectMapper;
+
+    @Autowired
+    TodoService todoService;
+
+    public TodoListener(){
+        objectMapper = new ObjectMapper();
+    }
 
     @Bean(name = "receiveTodoSaveMessage")
     public String receiveTodoSaveMessage(){
@@ -48,17 +63,21 @@ public class TodoListener implements MessageListener{
 
     @Override
     public void onMessage(Message message) {
+        String payload = null;
         try {
             logger.info("Message received - " + message.getJMSMessageID() + ", type=" + message.getClass());
-            String payload;
+
             if (message instanceof TextMessage) {
                 payload = ((TextMessage) message).getText();
                 logger.info(payload);
             }
             //ACK the received message manually because of the set Session.CLIENT_ACKNOWLEDGE above
             message.acknowledge();
-        } catch (JMSException ex) {
-            logger.error("Error processing incoming message.", ex);
+
+            Todo todo = objectMapper.readValue(payload, Todo.class);
+            todoService.saveTodo(todo);
+        } catch (Exception ex) {
+            logger.error("Error processing incoming message=" + payload, ex);
         }
     }
 }
