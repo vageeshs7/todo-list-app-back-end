@@ -2,16 +2,28 @@ package com.vag.todolist.dom;
 
 import org.springframework.data.annotation.Id;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Date;
 
+@Entity
+@Table(name = "todos")
 public class Todo implements Serializable {
 	@Id
 	private int id;
 
+	@Column(name = "userid")
     private String user;
+
+	@Column(name = "description")
     private String desc;
+
+	@Column(name = "target_date")
     private Date targetDate;
+
+	@Column(name = "is_done")
     private boolean isDone;
     
     
