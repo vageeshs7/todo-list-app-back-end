@@ -16,7 +16,7 @@ pipeline {
 
         stage ('Build') {
             steps {
-                sh 'mvn clean package install'
+                sh 'mvn clean package install -Dmaven.test.skip=true'
             }
             post {
                 success {
