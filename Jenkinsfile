@@ -18,11 +18,6 @@ pipeline {
             steps {
                 sh 'mvn clean package install -Dmaven.test.skip=true'
             }
-            post {
-                success {
-                    junit 'target/surefire-reports/**/*.xml' 
-                }
-            }
         }
         stage ('Docker Image') {
             steps {
